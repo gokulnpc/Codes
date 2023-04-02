@@ -1,0 +1,137 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    int graph[50][50];
+    int i, j, k, t;
+    int nn;
+
+    cout << "\nEnter No of Nodes: ";
+    cin >> nn;
+
+    for (i = 0; i < nn; i++)
+    {
+        for (j = 0; j < nn; j++)
+        {
+            graph[i][j] = -1;
+        }
+    }
+
+    char ch[26] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+    /* Get input */
+    cout << "\nEnter the cost matrix :\n";
+    int tp;
+    for (i = 0; i < nn; i++)
+    {
+        for (j = 0; j < nn; j++)
+        {
+            cin >> tp;
+            graph[i][j] = tp;
+        }
+    }
+
+    /* Initializing via */
+    int via[50][50];
+    for (i = 0; i < nn; i++)
+    {
+        for (j = 0; j < nn; j++)
+        {
+            via[i][j] = -1;
+        }
+    }
+
+    // sharing table
+    int sh[50][50][50];
+    for (i = 0; i < nn; i++)
+    {
+        for (j = 0; j < nn; j++)
+        {
+            for (k = 0; k < nn; k++)
+            {
+                /* Check if edge is present or not*/
+                if ((graph[i][j] > -1) && (graph[j][k] > -1))
+                {
+                    sh[i][j][k] = graph[j][k] + graph[i][j];
+                }
+                else
+                {
+                    sh[i][j][k] = -1;
+                }
+            }
+        }
+    }
+
+    /* Updating */
+    int final[50][50];
+    for (i = 0; i < nn; i++)
+    {
+        for (j = 0; j < nn; j++)
+        {
+            /* Copy initial value from input graph*/
+            final[i][j] = graph[i][j];
+            via[i][j] = i;
+
+            /*Update them*/
+            /* Check condition a - b - c */
+            for (k = 0; k < nn; k++)
+            {
+
+                if ((final[i][j] > sh[i][k][j]) || (final[i][j] == -1))
+                {
+                    if (sh[i][k][j] > -1)
+                    {
+                        final[i][j] = sh[i][k][j];
+                        via[i][j] = k;
+                    }
+                }
+            }
+            /* After considering three vertex if final not found
+                consider 4th
+                a- b- c- d
+            */
+
+            if (final[i][j] == -1)
+            {
+                for (k = 0; k < nn; k++)
+                {
+
+                    if ((final[i][k] != -1) && (final[k][j] != -1))
+                    {
+                        if ((final[i][j] == -1) || ((final[i][j] != -1) && (final[i][j] > final[i][k] + final[k][j])))
+                        {
+                            if (final[i][k] + final[k][j] > -1)
+                            {
+                                final[i][j] = final[i][k] + final[k][j];
+                                via[i][j] = k;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    cout << "\nEnter node no: ";
+    int temp;
+    cin >> temp;
+    temp--;
+    for (i = temp; i <= temp; i++)
+    {
+        cout << "\n"
+             << ch[i] << " Table";
+        cout << "\nNode\tDist\tVia";
+        for (j = 0; j < nn; j++)
+        {
+            cout << "\n"
+                 << ch[j] << "\t" << final[i][j] << "\t";
+            if (i == via[i][j])
+                cout << "-";
+            else
+                cout << ch[via[i][j]];
+        }
+    }
+
+    return 0;
+}
